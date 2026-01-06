@@ -41,10 +41,24 @@ class MinecraftStatsHandler:
                 self.username = data['name']
                 username_map[self.uuid] = self.username
                 return data
+            elif response.status_code == 204:
+                #"UUID not found, possible offline mode enabled"
+                data = {
+                    "id" : "069a79f444e94726a5befca90e38aaf5",
+                    "name" : "Unknown account (offline)",
+                    "properties" : [ {
+                        "name" : "textures",
+                        "value" : "ewogICJ0aW1lc3RhbXAiIDogMTc2NzczNzY1OTQxMiwKICAicHJvZmlsZUlkIiA6ICI3M2YzN2M2OWFjZmM0NDMyODc1YTk3ZmEzM2UwYmU5MCIsCiAgInByb2ZpbGVOYW1lIiA6ICJPbHBlcyIsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS84Yzg3ZDRhY2QxMTFiY2ZkMmZjNDdmMmRhZmYzZjg0Njk2MjE4ZTNkMTcyZDgzYjZiYjZhYTRiMmRmMzUwODMyIgogICAgfSwKICAgICJDQVBFIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS81ZWM5MzBjZGQyNjI5Yzg3NzE2NTVjNjBlZWJlYjg2N2I0YjY1NTliMGU2ZDNiYzcxYzQwYzk2MzQ3ZmEwM2YwIgogICAgfQogIH0KfQ=="
+                    } ],
+                    "profileActions" : [ ]
+                } 
+                self.username = data['name']
+                username_map[self.uuid] = self.username
+                return data 
             elif response.status_code == 404:
                 return "Error: UUID not found. Check if the UUID is correct."
-            elif response.status_code == 204:
-                return "No content found. The UUID might not exist."
+            # elif response.status_code == 204:
+            #     return "No content found. The UUID might not exist."
             else:
                 return f"Error: {response.status_code} - {response.reason}"
         except requests.exceptions.RequestException as e:
@@ -88,7 +102,7 @@ class MinecraftStatsHandler:
             cape_response = requests.get(user_url)
             if cape_response.status_code == 200:
                 data = cape_response.json()
-                if data['exists'] == True:
+                if data['exists']:
                     cape_url = data['imageUrl']
                 else:
                     return f'No cape found for {self.username}!'
@@ -163,7 +177,7 @@ class MinecraftStatsHandler:
                     # print(f"Skipping recipe advancement: {advancement}")
                     continue
                 
-                if not "minecraft" in advancement:
+                if "minecraft" not in advancement:
                     continue
                 
                 if "root" in advancement:

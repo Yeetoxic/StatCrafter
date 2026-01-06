@@ -175,7 +175,7 @@
                 {% for player in players %}
                 <tr>
                     <!-- Player Head -->
-                    <td><img class="player-head" src="/static/skins/{{player['uuid']}}_head.png" alt="Player Head"></td>
+                    <td><img class="player-head" src="/static/skins/{{player['uuid']}}_head.png" alt="Player Head" onerror="this.onerror=null; this.src='/static/skins/default_head.png';"></td>
                     
                     <!-- Username Link -->
                     <td><a href="{{ url_for('player_page', uuid=player['uuid']) }}">{{ player['username'] }}</a></td>

@@ -19,7 +19,7 @@
 
     <!-- Page Header -->
     <div class="container text-center">
-        <h1 class="mb-4"><img class="player-head" src="{{ url_for('static', filename='skins/' + player['uuid'] + '_head.png') }}" alt="Player Head"> {{ player.username }}'s Advancements</h1>
+        <h1 class="mb-4"><img class="player-head" src="{{ url_for('static', filename='skins/' + player['uuid'] + '_head.png') }}" alt="Player Head" onerror="this.onerror=null; this.src='/static/skins/default_head.png';"> {{ player.username }}'s Advancements</h1>
         <a href="/player/{{ player.uuid }}" class="btn btn-secondary mb-4">Back to Player Page</a>
     </div>
 
@@ -73,7 +73,7 @@
                 {% for advancement, data in advancements['other_advancements'].items() %}
                 <tr>
                     <td>
-                        <img src="{{ url_for('static', filename='advancements/' + data.get('icon', 'default-icon.png')) }}" 
+                        <img src="{{ url_for('static', filename='advancements/' + data.get('icon', 'default-icon') + '.png') }}" 
                              alt="Icon" class="advancement-icon">
                     </td>
                     <td>

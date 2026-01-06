@@ -11,9 +11,9 @@ services:
       EULA: "TRUE"
       TYPE: "FABRIC"
       MEMORY: "2G"
+      ONLINE_MODE: "false"
     volumes:
       - minecraft_data:/data
-      - ./monitor.py:/opt/minecraft/monitor.py  # Mount the Python script
     entrypoint: >
       bash -c "
         echo 'Starting Minecraft Server...';
