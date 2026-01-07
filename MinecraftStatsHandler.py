@@ -95,6 +95,7 @@ class MinecraftStatsHandler:
 
     
     def get_minecraft_capes(self):
+        cape_url = None
         try:
             user_url = f"https://api.capes.dev/load/{self.uuid}/minecraft"
 

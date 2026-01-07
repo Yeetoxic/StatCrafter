@@ -89,7 +89,9 @@ def run_initial_processing():
                             player.get_minecraft_capes()
 
                             # Generate advancement report
+                            print("generating report")
                             player.generate_achievement_report()
+                            print("done generating report")
 
                             # Convert stats to simplified JSON
                             player.convert_stats_to_simplified_json()
