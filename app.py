@@ -3,6 +3,7 @@ import json
 import os
 from PlayerGrabber import PlayerGrabber
 from MinecraftStatsHandler import MinecraftStatsHandler
+from advancement_criteria_generator import build_multi_part_advancements
 import threading
 import time
 from datetime import datetime
@@ -32,6 +33,24 @@ logging.getLogger('werkzeug').setLevel(logging.ERROR)
 # Get the local IP address
 my_ip = socket.gethostbyname(socket.gethostname())
 
+def find_latest_jar(versions_dir="./versions"):
+    # List all subdirectories
+    subdirs = [d for d in os.listdir(versions_dir)
+               if os.path.isdir(os.path.join(versions_dir, d))]
+
+    if not subdirs:
+        raise FileNotFoundError(f"No version folders found in {versions_dir}")
+
+    # Sort directories in reverse (latest first)
+    latest_version = sorted(subdirs, reverse=True)[0]
+    latest_folder = os.path.join(versions_dir, latest_version)
+
+    # Look for any file starting with 'server-' and ending with '.jar'
+    for f in os.listdir(latest_folder):
+        if f.startswith("server-") and f.endswith(".jar"):
+            return os.path.join(latest_folder, f)
+
+    raise FileNotFoundError(f"No server-*.jar found in {latest_folder}")
 
 def run_initial_processing():
     global stop_event
@@ -39,6 +58,8 @@ def run_initial_processing():
     Runs PlayerGrabber and MinecraftStatsHandler to process data when the app starts.
     """
     print("Starting initial data processing...")
+    
+    build_multi_part_advancements(find_latest_jar("../versions"), "static/advancement_criteria.json")
 
     # Process player data using PlayerGrabber
     input_folder = "../world/playerdata"
@@ -329,7 +350,7 @@ def player_advancements(uuid):
         return "Player not found", 404
     
     # Load the advancements for the player
-    advancements = load_advancements(uuid)
+    advancements = load_advancements(uuid) or {"multi_part_advancements": {}}
     
     return render_template('advancements.html', player=player, advancements=advancements, config=config_data)
 
