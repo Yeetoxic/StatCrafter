@@ -9,8 +9,8 @@ services:
       - "5000:5000"
     environment:
       EULA: "TRUE"
-      TYPE: "FABRIC"
-      VERSION: "25w14craftmine"
+      TYPE: "VANILLA"
+      VERSION: "1.12.1"
       MEMORY: "2G"
       ONLINE_MODE: "false"
     volumes:

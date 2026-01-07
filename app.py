@@ -34,23 +34,29 @@ logging.getLogger('werkzeug').setLevel(logging.ERROR)
 my_ip = socket.gethostbyname(socket.gethostname())
 
 def find_latest_jar(versions_dir="./versions"):
-    # List all subdirectories
-    subdirs = [d for d in os.listdir(versions_dir)
-               if os.path.isdir(os.path.join(versions_dir, d))]
+    # ---------- Try versions/ directory ----------
+    if os.path.isdir(versions_dir):
+        subdirs = [
+            d for d in os.listdir(versions_dir)
+            if os.path.isdir(os.path.join(versions_dir, d))
+        ]
 
-    if not subdirs:
-        raise FileNotFoundError(f"No version folders found in {versions_dir}")
+        if subdirs:
+            for version in sorted(subdirs, reverse=True):
+                version_dir = os.path.join(versions_dir, version)
 
-    # Sort directories in reverse (latest first)
-    latest_version = sorted(subdirs, reverse=True)[0]
-    latest_folder = os.path.join(versions_dir, latest_version)
+                for f in os.listdir(version_dir):
+                    if "server" in f.lower() and f.endswith(".jar"):
+                        return os.path.join(version_dir, f)
 
-    # Look for any file starting with 'server-' and ending with '.jar'
-    for f in os.listdir(latest_folder):
-        if f.startswith("server-") and f.endswith(".jar"):
-            return os.path.join(latest_folder, f)
+    # ---------- Fallback: current directory ----------
+    for f in os.listdir("."):
+        if "server" in f.lower() and f.endswith(".jar"):
+            return os.path.abspath(f)
 
-    raise FileNotFoundError(f"No server-*.jar found in {latest_folder}")
+    raise FileNotFoundError(
+        "No *server*.jar found in ./versions or current directory"
+    )
 
 def run_initial_processing():
     global stop_event
