@@ -44,9 +44,8 @@ def extract_fields(adv_json, lang):
 # Build multi-part advancement index
 # -----------------------------
 def build_multi_part_advancements(jar_path, output_path="index.json"):
-    folders = ("adventure", "end", "husbandry", "nether", "story")
-
     lang = load_en_us(jar_path)
+
     multi_part_index = {}
     other_index = {}
 
@@ -59,7 +58,7 @@ def build_multi_part_advancements(jar_path, output_path="index.json"):
                 len(path.parts) >= 5
                 and path.parts[0:2] == ("data", "minecraft")
                 and path.parts[2] in ("advancement", "advancements")
-                and path.parts[3] in folders
+                and path.parts[3] != "recipes"
                 and path.suffix == ".json"
             ):
                 with jar.open(name) as f:
