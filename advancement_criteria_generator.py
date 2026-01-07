@@ -53,13 +53,19 @@ def extract_fields(adv_json, lang):
 
     # Icon
     icon = display.get("icon")
-    if isinstance(icon, dict) and "id" in icon:
-        result["icon"] = icon["id"].split(":")[-1]
+    if isinstance(icon, dict):    
+        if "id" in icon:
+            result["icon"] = icon["id"].split(":")[-1]
+        elif "item" in icon:
+            result["icon"] = icon["item"].split(":")[-1]
 
     # Requirements — only keep if multiple
     if "requirements" in adv_json and len(adv_json["requirements"]) > 1:
         result["requirements"] = adv_json["requirements"]
         result["requirements_num"] = len(adv_json["requirements"])
+    elif "criteria" in adv_json and len(adv_json["criteria"]) > 1:
+        result["requirements"] = [[key] for key in adv_json["criteria"]]
+        result["requirements_num"] = len(adv_json["criteria"])
 
     return result
 
