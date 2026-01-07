@@ -111,6 +111,8 @@ class MinecraftStatsHandler:
 
 
             # Download and save cape
+            if not cape_url:
+                return "no cape url"
             cape_response = requests.get(cape_url)
             if cape_response.status_code == 200:
                 cape_file = os.path.join(self.capes_folder, f"{self.uuid}_cape.png")
