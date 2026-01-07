@@ -10,6 +10,7 @@ services:
     environment:
       EULA: "TRUE"
       TYPE: "FABRIC"
+      VERSION: "23w13a_or_b"
       MEMORY: "2G"
       ONLINE_MODE: "false"
     volumes:

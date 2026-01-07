@@ -44,7 +44,6 @@ def extract_fields(adv_json, lang):
 # Build multi-part advancement index
 # -----------------------------
 def build_multi_part_advancements(jar_path, output_path="index.json"):
-    base_path = "data/minecraft/advancement/"
     folders = ("adventure", "end", "husbandry", "nether", "story")
 
     lang = load_en_us(jar_path)
@@ -54,25 +53,29 @@ def build_multi_part_advancements(jar_path, output_path="index.json"):
     with zipfile.ZipFile(jar_path, "r") as jar:
         for name in jar.namelist():
             path = PurePosixPath(name)
+
+            # data/minecraft/(advancement|advancements)/<folder>/<file>.json
             if (
-                path.parts[:3] == ("data", "minecraft", "advancement")  # singular
-                and len(path.parts) >= 5
+                len(path.parts) >= 5
+                and path.parts[0:2] == ("data", "minecraft")
+                and path.parts[2] in ("advancement", "advancements")
                 and path.parts[3] in folders
                 and path.suffix == ".json"
             ):
                 with jar.open(name) as f:
                     adv_json = json.load(f)
-                    filtered = extract_fields(adv_json, lang)
 
-                    # Only store if "requirements" exists (multi-part)
-                    if "requirements" in filtered:
-                        relative_path = path.relative_to(base_path).with_suffix("")
-                        key = f"minecraft:{str(relative_path).replace('\\', '/')}"
-                        multi_part_index[key] = filtered
-                    else:
-                        relative_path = path.relative_to(base_path).with_suffix("")
-                        key = f"minecraft:{str(relative_path).replace('\\', '/')}"
-                        other_index[key] = filtered
+                filtered = extract_fields(adv_json, lang)
+
+                # Build advancement ID WITHOUT caring about singular/plural
+                relative_path = PurePosixPath(*path.parts[3:]).with_suffix("")
+                key = f"minecraft:{relative_path.as_posix()}"
+
+                # Multi-part vs other
+                if "requirements" in filtered:
+                    multi_part_index[key] = filtered
+                else:
+                    other_index[key] = filtered
 
     # Wrap under "multi_part_advancements"
     final_json = {"multi_part_advancements": multi_part_index, "other_advancements": other_index}
