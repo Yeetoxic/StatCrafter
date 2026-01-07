@@ -49,13 +49,15 @@ def find_latest_jar(versions_dir="./versions"):
                     if "server" in f.lower() and f.endswith(".jar"):
                         return os.path.join(version_dir, f)
 
-    # ---------- Fallback: current directory ----------
-    for f in os.listdir("."):
+    # ---------- Fallback: parent directory ----------
+    parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
+
+    for f in os.listdir(parent_dir):
         if "server" in f.lower() and f.endswith(".jar"):
-            return os.path.abspath(f)
+            return os.path.join(parent_dir, f)
 
     raise FileNotFoundError(
-        "No *server*.jar found in ./versions or current directory"
+        "No *server*.jar found in ./versions or parent directory"
     )
 
 def run_initial_processing():

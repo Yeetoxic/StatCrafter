@@ -5,10 +5,33 @@ from pathlib import PurePosixPath
 # -----------------------------
 # Load en_us language file
 # -----------------------------
+def parse_lang_file(text):
+    lang = {}
+
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" in line:
+            key, value = line.split("=", 1)
+            lang[key.strip()] = value.strip()
+
+    return lang
+
+
 def load_en_us(jar_path):
     with zipfile.ZipFile(jar_path, "r") as jar:
-        with jar.open("assets/minecraft/lang/en_us.json") as f:
-            return json.load(f)
+        # Try modern JSON format
+        try:
+            with jar.open("assets/minecraft/lang/en_us.json") as f:
+                return json.load(f)
+        except KeyError:
+            pass
+
+        # Fallback to legacy .lang format
+        with jar.open("assets/minecraft/lang/en_us.lang") as f:
+            text = f.read().decode("utf-8", errors="replace")
+            return parse_lang_file(text)
 
 # -----------------------------
 # Extract only required fields
@@ -56,7 +79,8 @@ def build_multi_part_advancements(jar_path, output_path="index.json"):
             # data/minecraft/(advancement|advancements)/<folder>/<file>.json
             if (
                 len(path.parts) >= 5
-                and path.parts[0:2] == ("data", "minecraft")
+                and path.parts[0] in ("data", "assets") 
+                and path.parts[1] == "minecraft"
                 and path.parts[2] in ("advancement", "advancements")
                 and path.parts[3] != "recipes"
                 and path.suffix == ".json"
