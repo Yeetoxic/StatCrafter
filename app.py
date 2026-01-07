@@ -278,31 +278,10 @@ def online_players():
             "error": "Could not retrieve online players",
             "details": error_message
         }), 500
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
+        
+        
+        
 
 @app.route('/')
 def index():
@@ -339,8 +318,7 @@ def player_page(uuid):
         }
         print(f"Stats file not found for {uuid}, using default.")
     
-    advancements = load_advancements(uuid)
-    return render_template('player.html', player=player, stats=stats, advancements=advancements, config=config_data)
+    return render_template('player.html', player=player, stats=stats, config=config_data)
 
 @app.route('/player/<uuid>/advancements')
 def player_advancements(uuid):
@@ -350,7 +328,7 @@ def player_advancements(uuid):
         return "Player not found", 404
     
     # Load the advancements for the player
-    advancements = load_advancements(uuid) or {"multi_part_advancements": {}}
+    advancements = load_advancements(uuid) or {"multi_part_advancements": {}, "other_advancements": {}}
     
     return render_template('advancements.html', player=player, advancements=advancements, config=config_data)
 
